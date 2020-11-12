@@ -10,7 +10,17 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-df <- read.csv("SpotifyFeatures.csv")
-write_rds(df, "SpotifyFeatures.rds")
+library(dplyr)
 ```
 
+```{r}
+spotify <- readRDS("SpotifyFeatures.rds")
+
+spotify <- spotify %>% 
+  filter(!genre %in% c("A Capella", "Children’s Music", "Children's Music", "Comedy", "Reggae")) 
+```
+
+Got rid of acapella bc count was too low (119)
+Got rid of children's music bc count was too high when combined (twice others)
+Got rid of Reggae because Reggae and Ska are considered very similar, Raggaeton is the preferred genre nowadays
+Got rid of Comedy bc it's not music
