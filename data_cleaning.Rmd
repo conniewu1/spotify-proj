@@ -24,3 +24,50 @@ Got rid of acapella bc count was too low (119)
 Got rid of children's music bc count was too high when combined (twice others)
 Got rid of Reggae because Reggae and Ska are considered very similar, Raggaeton is the preferred genre nowadays
 Got rid of Comedy bc it's not music
+
+
+
+### EDA
+
+
+```{r count occurrences}
+counts <- spotify %>% 
+  group_by(genre) %>% 
+  tally()
+
+counts
+
+barplot(counts$n, col = as.factor(counts$genre), names.arg=counts$genre, las=2)
+
+
+```
+
+
+```{r}
+# Songs with multiple genre labels
+duplicated_ids = unique(spotify$track_id[duplicated(spotify$track_id)])
+duplicated_ids = as.vector(duplicated_ids)
+length(duplicated_ids)
+```
+
+31400 songs with more than one genre
+
+
+
+```{r}
+library(ggplot2)
+library(tidyr)
+feature_names = names(spotify)[c(5,6,7,8,9,10,12,13,15,16,18)]
+
+spotify %>%
+  select(c('genre', feature_names)) %>%
+  pivot_longer(cols = feature_names) %>%
+  ggplot(aes(x = value)) +
+  geom_density(aes(color = genre), alpha = 0.5) +
+  facet_wrap(~name, ncol = 3, scales = 'free') +
+  labs(title = 'Spotify Audio Feature Density - by Genre',
+       x = '', y = 'density') +
+  theme(axis.text.y = element_blank()) 
+
+````
+orginal code can be found at https://www.kaylinpavlik.com/classifying-songs-genres/
