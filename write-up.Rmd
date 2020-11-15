@@ -1,0 +1,57 @@
+---
+title: "Write-up"
+output: html_document
+---
+
+
+
+## Introduction– 
+Introduction: A few paragraphs which (i) motivate problem importance & relevance
+(supported by relevant literature, if any), (ii) describe project goals and how such
+goals address the problem, as well as (iii) a high-level roadmap of the proposed
+methodology, and (iv) other relevant information for the reader. See project rubric
+for details
+
+Companies and artists alike can make use of music genre classification. Further, Based on music genre, platforms like Apple Music, Spotify, and SoundCloud can recommend their users to new artists and songs to enhance the user experience. In the past, this was done by pattern recognition after breaking the songs down frame by frame, but with the help of Spotify we have insights into the audio
+features for the tracks [1]. This paper aims to determine whether we can accurately predict music genre based on particular attributes.
+
+
+– Data: This should be an extension of the “Data description” section from your
+proposal. See project rubric for details.
+
+The data set we used came from Kaggle and contains 232,725 tracks and 26 genres [2].
+We decided to use the music genre as the response varible and use the 13 features as predictors.
+
+
+
+– Methodology: Discussion & justification of model choice and features, and how the
+proposed model(s) fully addresses project goals. Any “downstream” uses of the
+model (e.g., for prediction, optimization, ranking) should be discussed in detail
+here. See project rubric for details.
+
+
+
+
+– Results: Statistical analyses of the fitted model(s), and a translation of these
+findings into meaningful & understandable conclusions for the target audience
+(e.g., engineers, business managers, policy-makers, etc). See project rubric for
+details.
+
+
+
+
+– Conclusion: A summary of key findings and potential impacts of your project
+
+
+
+
+
+
+
+## Works Cited
+
+[1] C.N. Silla Jr., A.L. Koerich, C.A.A. Kaestner
+A machine learning approach to automatic music genre classification
+J Braz Comput Soc, 14 (3) (2008)
+
+[2]https://www.kaggle.com/zaheenhamidani/ultimate-spotify-tracks-db
