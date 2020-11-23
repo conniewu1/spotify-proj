@@ -116,3 +116,19 @@ round((sum(diag(ctable5.test.clean))/sum(ctable5.test.clean))*100,2)
 ```
 litttyyyyyy.
 
+# SVM
+
+```{r}
+# install.packages('e1071')
+library(e1071)
+library(caret)
+```
+
+
+```{r}
+svm_model1 <- svm(genre ~ ., data=train, cost = 10, kernel='radial')
+```
+
+```{r}
+preds <- predict(svm_model1, data=test)
+```
