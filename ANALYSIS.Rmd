@@ -83,8 +83,9 @@ test5 <- spotify.top5[-rows,]
 
 ```{r}
 model.all5 <- multinom(genre ~ ., data = train5)
-step_model5 <- step(model.all5, direction = "forward")
+step_model5 <- step(model.all5, direction = "backward")
 summary(step_model5)
+write_rds(step_model5, 'multi_final.rds')
 ```
 #AIC is lower nice
 
