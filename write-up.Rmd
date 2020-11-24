@@ -216,21 +216,7 @@ Another interesting variable that we can interpret is popularity. We can see tha
 
 ### Model Validation and Diagnostics
 
-<<<<<<< HEAD
-## SVM
-
-The SVM model was fit using the variables chosen from backward selection as in
-the case for Multinomial Logistic Regression to keep consistent. As a result, 
-the only variable not chosen in the final model was that of liveliness 
-
-The output from the SVM model indicates that from our training dataset tells us
-there are 1982 support vectors.  We fit the model with a relatively low cost 
-gives that was rather robust. The number of support vectors given the training 
-data follows from our choice of C as we increase C there are fewer support fewer vectors. Further,As shown in the resulting table, 99% of our training observations were 
-correctly classified.
-=======
 We performed 5-fold cross-validation on our model, the results of which can be found in our Appendix. We partitioned the data into 90% for the training set and 10% for the test set. We then partitioned the training set 5 more times to obtain several estimates for 5-fold cross-validation. We averaged these estimates and obtained 0.747, or 74.7% accuracy. Then, we trained the model on the whole training set (90% of the data) and predicted on the testing set (10% of the data) and obtained a prediction accuracy of 74.2%. This is relatively accurate and all of the estimates are around the same, indicating that our model is not overfitting the test set. 
->>>>>>> 610923c6f10e8f0282fcf7bf9bf2d3e49715916a
 
 ```{r fig.cap="Binned Residual Plot for Multinomial Model"}
 arm::binnedplot(predict(multi_final, type = "probs"),           
@@ -248,7 +234,16 @@ arm::binnedplot(predict(multi_final, type = "probs"),
 From this residual plot, it appears that less than 5% of the observations lie outside of the gray lines, which represent the &#177;2 standard error bands. Additionally, the residuals appear to be mostly randomly scattered, although a large amount of the residuals are crowded at the left end of the plot. Overall, we can see that our model suits the data relatively well.
 
 ## SVM
-The output from the SVM model indicates that from our training dataset tells us there are 1982 support vectors.  We fit the model with a relatively low cost gives that was rather robust. The number of support vectors given the training data follows from our choice of c as we increase c there are fewer support fewer vectors. Further,As shown in the resulting table, 99% of our training observations were correctly classified
+
+The SVM model was fit using the variables chosen from backward selection as in
+the case for Multinomial Logistic Regression to keep consistent. As a result, 
+the only variable not chosen in the final model was that of liveliness 
+
+The output from the SVM model indicates that from our training dataset tells us
+there are 1982 support vectors.  We fit the model with a relatively low cost 
+gives that was rather robust. The number of support vectors given the training 
+data follows from our choice of C as we increase C there are fewer support fewer vectors. Further,As shown in the resulting table, 99% of our training observations were 
+correctly classified.
 
 # Conclusions
 
