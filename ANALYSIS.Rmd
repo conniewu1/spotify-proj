@@ -124,7 +124,7 @@ library(caret)
 
 
 ```{r}
-svm_model1 <- svm(genre ~ ., data=train5, cost = .1, kernel='radial')
+svm_model1 <- svm(genre ~ . - liveness, data=train5, cost = .1, kernel='radial')
 summary(svm_model1)
 
 preds <- predict(svm_model1, newdata=test5)
@@ -132,9 +132,6 @@ svm.table <- table(preds, test5$predicted5)
 round((sum(diag(svm.table))/sum(svm.table))*100,2)
 ```
 
-```{r}
-
-```
 
 
 
