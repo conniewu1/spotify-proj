@@ -66,6 +66,7 @@ topfive_spotify <- spotify %>%
   group_by(genre) %>% 
   summarise(counts=n()) %>%
   top_n(5)
+
 spotify.top5 <- spotify %>%
   filter(genre == topfive_spotify$genre) %>%
   select(genre, popularity, acousticness, danceability, duration_ms, energy, instrumentalness, liveness, loudness, speechiness, tempo, valence)
@@ -88,10 +89,11 @@ summary(step_model5)
 #AIC is lower nice
 
 ```{r}
-head(probability.table <- fitted(step_model5))
+model <- multinom(genre ~ . - liveness, data = train5)
+head(probability.table <- fitted(model))
 
 # Predicting the values for train dataset
-train5$predicted5 <- predict(step_model5, newdata = train5, "class")
+train5$predicted5 <- predict(model, newdata = train5, "class")
  
 # Building classification table
 ctable5 <- table(train5$genre, train5$predicted5)
@@ -99,11 +101,11 @@ ctable5 <- table(train5$genre, train5$predicted5)
 # Calculating accuracy - sum of diagonal elements divided by total obs
 round((sum(diag(ctable5))/sum(ctable5))*100,2)
 ```
-yooooo 75% not too shabby lets see on the fucking test boi 
+
 ```{r}
 
 # Predicting the values for train dataset
-test5$predicted5 <- predict(step_model5, newdata = test5, "class")
+test5$predicted5 <- predict(model, newdata = test5, "class")
  
 # Building classification table
 ctable5.test <- table(test5$genre, test5$predicted5)
@@ -112,7 +114,6 @@ ctable5.test <- table(test5$genre, test5$predicted5)
 round((sum(diag(ctable5.test))/sum(ctable5.test))*100,2)
 
 ```
-litttyyyyyy.
 
 # SVM
 
@@ -124,11 +125,11 @@ library(caret)
 
 
 ```{r}
-svm_model1 <- svm(genre ~ . - liveness, data=train5, cost = .1, kernel='radial')
+svm_model1 <- svm(genre ~ . - liveness, data=train5, cost = 12, kernel='radial')
 summary(svm_model1)
 
-preds <- predict(svm_model1, newdata=test5)
-svm.table <- table(preds, test5$predicted5)
+test5$preds.svm <- predict(svm_model1, newdata=test5)
+svm.table <- table(test5$genre, test5$preds.svm)
 round((sum(diag(svm.table))/sum(svm.table))*100,2)
 ```
 
