@@ -134,7 +134,25 @@ test5$preds.svm <- predict(svm_model1, newdata=test5)
 svm.table <- table(test5$genre, test5$preds.svm)
 round((sum(diag(svm.table))/sum(svm.table))*100,2)
 ```
+```{r}
+tune.out=tune(svm,genre ~ . -liveness,data=train5 , ranges =list(cost=c(0.001 , 0.01, 0.1, 1,5,10,100) ))
 
+summary (tune.out)
+```
+
+
+
+
+```{r ROC}
+
+#svmfit.opt <- svm(genre ~ . -liveness,data=train5, kernel = "radial", gamma = 2, cost = 10, decision.values = TRUE)
+#fitted <- attributes(predict(svmfit.opt, train5,decision.values=TRUE))$decision.values
+
+#library(pROC)
+#ROC_svm <- roc(spotify[train5, "genre"], fitted)
+#plot(ROC_svm)
+
+```
 
 
 
