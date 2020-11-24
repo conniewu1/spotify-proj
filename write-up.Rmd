@@ -37,7 +37,7 @@ for details
 
 Cataloging and organizing music is an essential aspect of collecting and storing music. It allows us not only to identify and differentiate music, but also allows us to better understand the evolution of different types of music over periods of time. Genre has been the main and most efficient mode to categorize different kinds of music, and genre classification has always been a consistent challenge due to the complex nature of songs and the difficulty in differentiating the unique features specific to each genre. In the past, genre classification was largely performed by using pattern recognition after breaking the songs down frame by frame, and understanding the elements of chord progressions and stylistic features of the song [1]. However, the rise of big data has allowed us to more efficiently and accurately extract audio features and consequently automate the arduous task of classifying songs in particular genres. Genre classification is not only important in increasing the efficiency of cataloging music which is relevant to music companies and artists in organizing elements of their craft, but also for academics who wish to better understand the evolution of music and particular genres in their research. 
 
-Our study aims to build on modern statistical techniques that perform genre classification, by predicting the genre of songs based on multiple audio features each song possesses. Using well-known classification techniques such as logistic regression and support vector machines (SVM), we leverage the substantial capacity of modern computing to perform such statistical modeling on a large dataset of songs and various audio features taken from Spotify, and compare the performance of both classification techniques so as to evaluate their predictive accuracies, strengths and weaknesses of using either approach for genre classification. Using both methods to perform binary classification and also multi-group classification, this study aims to comprehensively and comparatively evaluate the effectiveness of both statistical methods with respect to music analytics. 
+Our study aims to build on modern statistical techniques that perform genre classification, by predicting the genre of songs based on multiple audio features each song possesses. Using well-known classification techniques such as logistic regression and support vector machines (SVM), we leverage the substantial capacity of modern computing to perform such statistical modeling on a large dataset of songs and various audio features taken from Spotify, and compare the performance of both classification techniques so as to evaluate their predictive accuracies, strengths and weaknesses of using either approach for genre classification. Using both methods to perform multi-group classification, this study aims to comprehensively and comparatively evaluate the effectiveness of both statistical methods with respect to music analytics. 
 
 Our paper is organized holistically and with simplicity to provide a comprehensive report on genre classification, starting with introducing research goals and providing the background motivations for the study. In Section 2, we provide a a description of the data as well as extensive exploratory data analysis which will motivate some design decisions during our statistical modeling. Section 3 describes our methodology with respect to implementing logistic regression and support vector machines for predicting genres of songs, structured with multi-group classification. In Section 4, we discuss our models' results as well as model diagnostics to evaluate the accuracy of each of the models' fit, and relate our results to relevant parties that will use genre classification. Finally in section 5, we consolidate our findings and conclude our study with its strengths and its limitations.
 
@@ -135,8 +135,12 @@ details.
 
 ## Multinomial Logistic Regression 
 
+```{r}
+multi_final <- readRDS('multi_final.rds')
+summary(multi_final)
+```
 
-
+To obtain this model, we put in all variables other than "genre" into a multinomial logistic regression model and performed backwards step-wise selection. All variables were chosen except for "liveness." We decided not to explore any interaction terms, as we believe that this would negatively affect the interpretability of our model.
 
 
 
