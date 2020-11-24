@@ -146,6 +146,10 @@ To obtain this model, we put in all variables other than "genre" into a multinom
 
 
 ## SVM
+The output from the SVM model indicates that from our training dataset tells us
+there are 1982 support vectors.  We fit the model with a relatively low cost gives that
+was rather robust. The number of support vectors given the training data follows from our choice 
+of c as we increase c there are fewer support fewer vectors. Further,As shown in the resulting table, 99% of our training observations were correctly classified
 
 
 # Conclusions
