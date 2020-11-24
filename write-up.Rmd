@@ -9,7 +9,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 ```
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
@@ -17,13 +17,83 @@ library(dplyr)
 library(kableExtra)
 library(ggplot2)
 library(tidyr)
+library(nnet)
+library(groupdata2)
+library(caret)
 ```
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
+```{r}
 spotify <- readRDS("SpotifyFeatures.rds")
 
 spotify <- spotify %>% 
   filter(!genre %in% c("A Capella", "Children’s Music", "Children's Music", "Comedy", "Reggae")) 
+
+spotify$genre <- factor(spotify$genre)
+spotify$genre <- relevel(spotify$genre, ref= "Classical")
+
+topfive_spotify <- spotify %>%
+  group_by(genre) %>% 
+  summarise(counts=n()) %>%
+  top_n(5)
+spotify.top5 <- spotify %>%
+  filter(genre == topfive_spotify$genre) %>%
+  select(genre, popularity, acousticness, danceability, duration_ms, energy, instrumentalness, liveness, loudness, speechiness, tempo, valence)
+spotify.top5$genre <- droplevels(spotify.top5$genre)
+
+n <- nrow(spotify.top5)
+sample.size <- floor(.3 * n)
+set.seed(1)
+rows <- sample(seq_len(n), size = sample.size)
+train5 <- spotify.top5[rows,] 
+test5 <- spotify.top5[-rows,]
+```
+
+```{r}
+crossvalidate <- function(data, k, model, dependent, multi = FALSE){
+  # 'data' is the training set with the ".folds" column
+  # 'k' is the number of folds we have
+  # 'model' is a string describing a linear regression model formula
+  # 'dependent' is a string with the name of the score column we want to predict
+  # 'random' is a logical; do we have random effects in the model?
+  
+  # Initialize empty list for recording performances
+  performances <- c()
+  
+  # One iteration per fold
+  for (fold in 1:k){
+    
+    # Create training set for this iteration
+    # Subset all the datapoints where .folds does not match the current fold
+    training_set <- data[data$.folds != fold,]
+    
+    # Create test set for this iteration
+    # Subset all the datapoints where .folds matches the current fold
+    testing_set <- data[data$.folds == fold,]
+    
+    ## Train model
+
+    # If there is a random effect,
+    # use glmer() to train model
+    # else use glm()
+
+    if (isTRUE(multi)){
+      # Train linear mixed effects model on training set
+      m <- multinom(model, training_set, type="class")
+    } else {
+      # Train linear model on training set
+      m <- glm(model, training_set, family = "binomial", control=glm.control(maxit=50))
+    }
+
+    ## Test model
+
+    # Predict the dependent variable in the testing_set with the trained model
+    predicted <- predict(m, testing_set, type="class", allow.new.levels = TRUE)
+    table(predicted, testing_set[[dependent]])
+    performances[fold] <- mean(predicted == testing_set[[dependent]])
+  }
+
+  return(performances)
+}
 ```
 
 # Introduction
@@ -37,7 +107,7 @@ for details
 
 Cataloging and organizing music is an essential aspect of collecting and storing music. It allows us not only to identify and differentiate music, but also allows us to better understand the evolution of different types of music over periods of time. Genre has been the main and most efficient mode to categorize different kinds of music, and genre classification has always been a consistent challenge due to the complex nature of songs and the difficulty in differentiating the unique features specific to each genre. In the past, genre classification was largely performed by using pattern recognition after breaking the songs down frame by frame, and understanding the elements of chord progressions and stylistic features of the song [1]. However, the rise of big data has allowed us to more efficiently and accurately extract audio features and consequently automate the arduous task of classifying songs in particular genres. Genre classification is not only important in increasing the efficiency of cataloging music which is relevant to music companies and artists in organizing elements of their craft, but also for academics who wish to better understand the evolution of music and particular genres in their research. 
 
-Our study aims to build on modern statistical techniques that perform genre classification, by predicting the genre of songs based on multiple audio features each song possesses. Using well-known classification techniques such as logistic regression and support vector machines (SVM), we leverage the substantial capacity of modern computing to perform such statistical modeling on a large dataset of songs and various audio features taken from Spotify, and compare the performance of both classification techniques so as to evaluate their predictive accuracies, strengths and weaknesses of using either approach for genre classification. Using both methods to perform binary classification and also multi-group classification, this study aims to comprehensively and comparatively evaluate the effectiveness of both statistical methods with respect to music analytics. 
+Our study aims to build on modern statistical techniques that perform genre classification, by predicting the genre of songs based on multiple audio features each song possesses. Using well-known classification techniques such as logistic regression and support vector machines (SVM), we leverage the substantial capacity of modern computing to perform such statistical modeling on a large dataset of songs and various audio features taken from Spotify, and compare the performance of both classification techniques so as to evaluate their predictive accuracies, strengths and weaknesses of using either approach for genre classification. Using both methods to perform multi-group classification, this study aims to comprehensively and comparatively evaluate the effectiveness of both statistical methods with respect to music analytics. 
 
 Our paper is organized holistically and with simplicity to provide a comprehensive report on genre classification, starting with introducing research goals and providing the background motivations for the study. In Section 2, we provide a a description of the data as well as extensive exploratory data analysis which will motivate some design decisions during our statistical modeling. Section 3 describes our methodology with respect to implementing logistic regression and support vector machines for predicting genres of songs, structured with multi-group classification. In Section 4, we discuss our models' results as well as model diagnostics to evaluate the accuracy of each of the models' fit, and relate our results to relevant parties that will use genre classification. Finally in section 5, we consolidate our findings and conclude our study with its strengths and its limitations.
 
@@ -135,12 +205,21 @@ details.
 
 ## Multinomial Logistic Regression 
 
+```{r}
+multi_final <- readRDS('multi_final.rds')
+```
 
+To obtain this model, we put in all variables other than "genre" into a multinomial logistic regression model and performed backwards step-wise selection. All variables were chosen except for `liveness`. We decided not to explore any interaction terms, as we believe that this would negatively affect the interpretability of our model.
 
+The coefficients of our final model can be found in the Appendix. It is important to note that the "Electronic" genre is the baseline genre in this model. We can see that the log-odds of a song being Pop versus Electronic when all variables have a value of 0 is -13.1, whereas the log-odds of a song being Soundtrack versus Electronic when all variables have a value of 0 is 7.83. This means that when all variables are 0, the odds are high of the song being in the Soundtrack genre vs. Electronic, whereas the odds are very low of the song being in the Pop genre vs. Electronic. 
 
+One variable that had a broad range of coefficient values amongst all the genres was danceability. We can see that all coefficient values are negative, meaning that with each 1 unit increase in danceability, holding all else constant, the log-odds of a song being any of the four genres other than Electronic vs. Electronic decreases by some amount. For example, with a 1 unit increase in danceability, holding all else constant, the log-odds of a song being Soundtrack vs. Electronic decreases by -11.9, whereas it decreases by -3.04 for Pop. This means that Electronic typically has the highest danceability rating out of the other 4 genres, with Soundtrack typically having the lowest danceability rating.
 
+Another interesting variable that we can interpret is popularity. We can see that all coefficient values are positive except for Sountrack's, meaning that with each 1 unit increase in popularity, holding all else constant, the log-odds of a song being Indie, Jazz, or Pop vs. Electronic increases by some amount, where the log-odds of a song being Soundtrack vs. Electronic decreases by some amount. More specifically, with a 1 unit increase in popularity, holding all else constant, the log-odds of a song being Soundtrack vs. Electronic decreases by -0.05, whereas it increases by 0.39 for Pop. In fact, because Pop's coefficient for popularity is the highest out the 4, we can see that Pop typically has the highest popularity, which makes sense because Pop music is typically what is played on mainstream radio stations. On the other hand, we can see that Soundtrack typically has the lowest popularity out of the 5 genres.
 
+### Model Validation and Diagnostics
 
+<<<<<<< HEAD
 ## SVM
 
 The SVM model was fit using the variables chosen from backward selection as in
@@ -152,11 +231,38 @@ there are 1982 support vectors.  We fit the model with a relatively low cost
 gives that was rather robust. The number of support vectors given the training 
 data follows from our choice of C as we increase C there are fewer support fewer vectors. Further,As shown in the resulting table, 99% of our training observations were 
 correctly classified.
+=======
+We performed 5-fold cross-validation on our model, the results of which can be found in our Appendix. We partitioned the data into 90% for the training set and 10% for the test set. We then partitioned the training set 5 more times to obtain several estimates for 5-fold cross-validation. We averaged these estimates and obtained 0.747, or 74.7% accuracy. Then, we trained the model on the whole training set (90% of the data) and predicted on the testing set (10% of the data) and obtained a prediction accuracy of 74.2%. This is relatively accurate and all of the estimates are around the same, indicating that our model is not overfitting the test set. 
+>>>>>>> 610923c6f10e8f0282fcf7bf9bf2d3e49715916a
 
+```{r fig.cap="Binned Residual Plot for Multinomial Model"}
+arm::binnedplot(predict(multi_final, type = "probs"),           
+                residuals(multi_final, type = "probs"), 
+           nclass = NULL, 
+           xlab = "Expected Values", 
+           ylab = "Average residual", 
+           main = "Binned Residual Plot for Multinomial Model", 
+           cex.pts = 0.8, 
+           col.pts = 1, 
+           col.int = "gray"
+           )
+```
+
+From this residual plot, it appears that less than 5% of the observations lie outside of the gray lines, which represent the &#177;2 standard error bands. Additionally, the residuals appear to be mostly randomly scattered, although a large amount of the residuals are crowded at the left end of the plot. Overall, we can see that our model suits the data relatively well.
+
+## SVM
+The output from the SVM model indicates that from our training dataset tells us there are 1982 support vectors.  We fit the model with a relatively low cost gives that was rather robust. The number of support vectors given the training data follows from our choice of c as we increase c there are fewer support fewer vectors. Further,As shown in the resulting table, 99% of our training observations were correctly classified
 
 # Conclusions
-– Conclusion: A summary of key findings and potential impacts of your project
 
+Perhaps the largest takeaway of this project is seeing how Multinomial Logistic Regression (MLR) and Support Vector Machines (SVM) are related to each other, as well as limitation of use for each model. The test accuracy for MLR and SVM were 74.3% and 75.74% respectively, and although SVM is more efficient and accurate, we sacrifice interpretability as to how each predictor may affect the likelihood of a particular genre being correctly classfied. With more knowledge about the distribution of our data through empirical and EDA observations, we determined that SVM with a radial kernal was most appropriate for predicting our data. This was because natural clusters (not linear separations) formed depending on the genres' predictors. These separations were better identified through SVM which may account for the slightly higher test accuracy. 
+A limitation/obstacle in the course of this case study was choosing how many different genres to consider in our models. Unfortunately, we had to immediately rule out using all/most of the cleaned 22 genres to choose from, due to computational limits in our local machines when running a MLR. Additionally, in the scope of Spotify's mission to provide popular songs to stream, analyze, and curate playlists from, it made sense to look at a "Top 10" genres, which ruled out more niche genres such as Anime, Ska, and Blue. However, due to overlap in many of the different indicators (many of which were scaled in a range of 0-1 as determined by Spotify), predictive power was lacking so we decided to narrow the field further and use the "Top 5" genres. Therefore to create meaningful models in context of usefulness for Spotify and to explore and analyze the nuances of MLR and SVM largely drove this project.
+
+In terms of impacts, having a high level of accuracy is important so Spotify can classify, organize, and ultimately recommend specific genres and songs to its users. While we only looked at the Top 5 genres, grouping models into bins of 5 might be an effective way to maintain fairly high predictability as well as manage computational limits. For example, in future analysis, we can take the Top 6-10 genres, the Top 11-15 genres, and the Top 16-22 genres and apply it to unknown genre-classified songs. This would allow for several possible predictions to which ultimately the highest likelihood for example could be chosen to finally label and predict the song's genre. This segmentation eases computational load and maintains higher accuracy as the possible outcomes are more clear to predict instead of a particular genre being among a crowd of other 21 genres with similar key predictors. In order to improve the results in future findings, perhaps more predictor variables would be useful. The indicators as given by Spotify reflect the aggregate of a particular song and does not account for, say: chord progression; change of keys, tempo, or loudness throughout the course of a song; and thematic or descriptive traits that might be indicative of a genre.
+
+
+
+– Conclusion: A summary of key findings and potential impacts of your project
 
 # Appendix
 
@@ -172,9 +278,39 @@ spotify %>%
   labs(title = 'Spotify Audio Feature Density - by Genre',
        x = '', y = 'density') +
   theme(axis.text.y = element_blank()) 
-````
+```
 
+## Multinomial Logistic Regression Model Coefficients
+```{r}
+kable(summary(multi_final)$coefficients, caption = "Coefficients of our Final Multinomial Logistic Regression Model")
+```
 
+### Multinomial Cross Validation Results 
+```{r}
+set.seed(1)
+
+Train <- createDataPartition(spotify.top5$genre, p=0.8, list=FALSE)
+training <- spotify.top5[ Train, ]
+testing <- spotify.top5[ -Train, ]
+
+data <- fold(
+  training,
+  k = 5
+) %>%
+  arrange(.folds)
+
+m0 <- 'genre ~ popularity + acousticness + danceability + 
+    duration_ms + energy + instrumentalness + loudness + speechiness + 
+    tempo + valence'
+p0 <- crossvalidate(data, k = 5, model = m0, dependent = 'genre', multi = TRUE)
+p0
+mean(p0)
+
+rand_fit3 <- multinom(m0, training, method="class")
+preds <- predict(rand_fit3, testing, type = "class")
+table(preds, testing[['genre']])
+mean(preds == testing[['genre']])
+```
 
 
 ## Works Cited
