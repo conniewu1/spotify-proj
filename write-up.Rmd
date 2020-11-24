@@ -39,7 +39,7 @@ Cataloging and organizing music is an essential aspect of collecting and storing
 
 Our study aims to build on modern statistical techniques that perform genre classification, by predicting the genre of songs based on multiple audio features each song possesses. Using well-known classification techniques such as logistic regression and support vector machines (SVM), we leverage the substantial capacity of modern computing to perform such statistical modeling on a large dataset of songs and various audio features taken from Spotify, and compare the performance of both classification techniques so as to evaluate their predictive accuracies, strengths and weaknesses of using either approach for genre classification. Using both methods to perform binary classification and also multi-group classification, this study aims to comprehensively and comparatively evaluate the effectiveness of both statistical methods with respect to music analytics. 
 
-Our paper is organized holistically and with simplicity to provide a comprehensive report on genre classification, starting with introducing research goals and providing the background motivations for the study. In Section 2, we provide a a description of the data as well as extensive exploratory data analysis which will motivate some design decisions during our statistical modeling. Section 3 describes our methodology with respect to implementing logistic regression and support vector machines for predicting genres of songs, structured with 2-group binary classification and multi-group classification. In Section 4, we discuss our models' results as well as model diagnostics to evaluate the accuracy of each of the models' fit, and relate our results to relevant parties that will use genre classification. Finally in section 5, we consolidate our findings and conclude our study with its strengths and its limitations.
+Our paper is organized holistically and with simplicity to provide a comprehensive report on genre classification, starting with introducing research goals and providing the background motivations for the study. In Section 2, we provide a a description of the data as well as extensive exploratory data analysis which will motivate some design decisions during our statistical modeling. Section 3 describes our methodology with respect to implementing logistic regression and support vector machines for predicting genres of songs, structured with multi-group classification. In Section 4, we discuss our models' results as well as model diagnostics to evaluate the accuracy of each of the models' fit, and relate our results to relevant parties that will use genre classification. Finally in section 5, we consolidate our findings and conclude our study with its strengths and its limitations.
 
 
 # Data
@@ -118,15 +118,22 @@ $$
 
 where $\boldsymbol{\beta_j}$ is a vector of regression coefficients, similar to $\mathbf{x_i}$ being a vector of predictors. This produces $J-1$ multinomial logit equations that contrast each of the categories, compared to binary logistic regression that contrasts between successes $Y=1$ and failures $Y=0$.
 
-## Support Vector Machine
+## Support Vector Machine (SVM)
 
 The second classification technique is a supervised machine learning model, chosen appropriately as our data is completely labeled. SVM performs classification by generating one or multiple hyperplanes with $p$ dimensions, $p$ being the number of predictors included in the model. A function is intuitively set to divide the points between two classes, forming what is known as a separating hyperplane. Among the separating hyperplanes created, the one making the largest margin between the two classes is chosen as the optimal model and is used for predictions. 
 
+For both the multinomial logistic and SVM models, we will only be using the top 5 genres, as more genres significantly decreases the predictive accuracy of the multinomial model. 
+
 # Results
+<!--
 – Results: Statistical analyses of the fitted model(s), and a translation of these
 findings into meaningful & understandable conclusions for the target audience
 (e.g., engineers, business managers, policy-makers, etc). See project rubric for
 details.
+-->
+
+## Multinomial Logistic Regression 
+
 
 
 
