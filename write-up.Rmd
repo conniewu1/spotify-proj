@@ -118,15 +118,22 @@ $$
 
 where $\boldsymbol{\beta_j}$ is a vector of regression coefficients, similar to $\mathbf{x_i}$ being a vector of predictors. This produces $J-1$ multinomial logit equations that contrast each of the categories, compared to binary logistic regression that contrasts between successes $Y=1$ and failures $Y=0$.
 
-## Support Vector Machine
+## Support Vector Machine (SVM)
 
 The second classification technique is a supervised machine learning model, chosen appropriately as our data is completely labeled. SVM performs classification by generating one or multiple hyperplanes with $p$ dimensions, $p$ being the number of predictors included in the model. A function is intuitively set to divide the points between two classes, forming what is known as a separating hyperplane. Among the separating hyperplanes created, the one making the largest margin between the two classes is chosen as the optimal model and is used for predictions. 
 
+For both the multinomial logistic and SVM models, we will only be using the top 5 genres, as more genres significantly decreases the predictive accuracy of the multinomial model. 
+
 # Results
+<!--
 – Results: Statistical analyses of the fitted model(s), and a translation of these
 findings into meaningful & understandable conclusions for the target audience
 (e.g., engineers, business managers, policy-makers, etc). See project rubric for
 details.
+-->
+
+## Multinomial Logistic Regression 
+
 
 
 
