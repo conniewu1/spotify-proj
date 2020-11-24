@@ -124,6 +124,7 @@ The second classification technique is a supervised machine learning model, chos
 
 For both the multinomial logistic and SVM models, we will only be using the top 5 genres, as more genres significantly decreases the predictive accuracy of the multinomial model. 
 
+
 # Results
 <!--
 – Results: Statistical analyses of the fitted model(s), and a translation of these
@@ -135,6 +136,12 @@ details.
 ## Multinomial Logistic Regression 
 
 
+
+
+
+
+
+## SVM
 
 
 # Conclusions
