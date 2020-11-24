@@ -19,6 +19,7 @@ spotify.top <- spotify %>%
 spotify.top$genre <- droplevels(spotify.top$genre)
 ```
 
+
 ```{r}
 n <- nrow(spotify.top)
 sample.size <- floor(.3 * n)
