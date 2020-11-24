@@ -9,7 +9,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE)
 ```
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
@@ -20,6 +20,7 @@ library(tidyr)
 library(nnet)
 library(groupdata2)
 library(caret)
+library(e1071)
 ```
 
 ```{r}
@@ -208,15 +209,15 @@ multi_final <- readRDS('multi_final.rds')
 
 |        The coefficients of our final model can be found in the Appendix. It is important to note that the "Electronic" genre is the baseline genre in this model. We can see that the log-odds of a song being Pop versus Electronic when all variables have a value of 0 is -13.1, whereas the log-odds of a song being Soundtrack versus Electronic when all variables have a value of 0 is 7.83. This means that when all variables are 0, the odds are high of the song being in the Soundtrack genre vs. Electronic, whereas the odds are very low of the song being in the Pop genre vs. Electronic. 
 
-|        One variable that had a broad range of coefficient values amongst all the genres was danceability. We can see that all coefficient values are negative, meaning that with each 1 unit increase in danceability, holding all else constant, the log-odds of a song being any of the four genres other than Electronic vs. Electronic decreases by some amount. For example, with a 1 unit increase in danceability, holding all else constant, the log-odds of a song being Soundtrack vs. Electronic decreases by -11.9, whereas it decreases by -3.04 for Pop. This means that Electronic typically has the highest danceability rating out of the other 4 genres, with Soundtrack typically having the lowest danceability rating.
+|        One variable that had a broad range of coefficient values among all the genres was danceability. We can see that all coefficient values are negative, meaning that with each 1 unit increase in danceability, holding all else constant, the log-odds of a song being any of the four genres other than Electronic vs. Electronic decreases by some amount. For example, with a 1 unit increase in danceability, holding all else constant, the log-odds of a song being Soundtrack vs. Electronic decreases by -11.9, whereas it decreases by -3.04 for Pop. This means that Electronic typically has the highest danceability rating out of the other 4 genres, with Soundtrack typically having the lowest danceability rating.
 
-|        Another interesting variable that we can interpret is popularity. We can see that all coefficient values are positive except for Sountrack's, meaning that with each 1 unit increase in popularity, holding all else constant, the log-odds of a song being Indie, Jazz, or Pop vs. Electronic increases by some amount, where the log-odds of a song being Soundtrack vs. Electronic decreases by some amount. More specifically, with a 1 unit increase in popularity, holding all else constant, the log-odds of a song being Soundtrack vs. Electronic decreases by -0.05, whereas it increases by 0.39 for Pop. In fact, because Pop's coefficient for popularity is the highest out the 4, we can see that Pop typically has the highest popularity, which makes sense because Pop music is typically what is played on mainstream radio stations. On the other hand, we can see that Soundtrack typically has the lowest popularity out of the 5 genres.
+|        Another interesting variable that we can interpret is popularity. We can see that all coefficient values are positive except for Soundtrack's, meaning that with each 1 unit increase in popularity, holding all else constant, the log-odds of a song being Indie, Jazz, or Pop vs. Electronic increases by some amount, whereas the log-odds of a song being Soundtrack vs. Electronic decreases by some amount. More specifically, with a 1 unit increase in popularity, holding all else constant, the log-odds of a song being Soundtrack vs. Electronic decreases by -0.05, whereas it increases by 0.39 for Pop. In fact, because Pop's coefficient for popularity is the highest out the 4, we can see that Pop typically has the highest popularity, which makes sense because Pop music is typically what is played on mainstream radio stations. On the other hand, we can see that Soundtrack typically has the lowest popularity out of the 5 genres.
 
 ### Model Validation and Diagnostics
 
-|        We performed 5-fold cross-validation on our model, the results of which can be found in our Appendix. We partitioned the data into 90% for the training set and 10% for the test set. We then partitioned the training set 5 more times to obtain several estimates for 5-fold cross-validation. We averaged these estimates and obtained 0.747, or 74.7% accuracy. Then, we trained the model on the whole training set (90% of the data) and predicted on the testing set (10% of the data) and obtained a prediction accuracy of 74.2%. This is relatively accurate and all of the estimates are around the same, indicating that our model is not overfitting the test set. 
+|        We performed 5-fold cross-validation on our model, the results of which can be found in our Appendix. We partitioned the data into 90% for the training set and 10% for the test set. We then partitioned the training set 5 more times to obtain several estimates for 5-fold cross-validation. We averaged these estimates and obtained 0.747, or 74.7% accuracy. Then, we trained the model on the whole training set (90% of the data) and predicted on the testing set (10% of the data) and obtained a prediction accuracy of 74.2%. This is relatively accurate and all of the estimates are around the same, indicating that our model is not overfitting the training set. 
 
-```{r fig.cap="Binned Residual Plot for Multinomial Model", out.width="100%", fig.align = 'center'}
+```{r fig.cap="Binned Residual Plot for Multinomial Model", out.width="80%", fig.align = 'center'}
 arm::binnedplot(predict(multi_final, type = "probs"),           
                 residuals(multi_final, type = "probs"), 
            nclass = NULL, 
@@ -233,19 +234,13 @@ arm::binnedplot(predict(multi_final, type = "probs"),
 
 ## SVM
 
-|        The SVM model was fit using the variables chosen from backward selection as in
-the case for Multinomial Logistic Regression to keep consistent. As a result, 
-the only variable not chosen in the final model was that of liveliness 
+|        The SVM model was fit using the variables chosen from backward selection as in the case for Multinomial Logistic Regression to keep consistent. As a result, the only variable not chosen in the final model was that of liveliness. It is important to note that we using a radial kernel, which is better for creating separation for non-linear relationships. This made sense because from the Exploratory Data Analysis section, it can be seen that linear hyperplanes could not be drawn to cleanly separate genres from each other based on the predictors. 
 
-|        The output from the SVM model indicates that from our training dataset tells us
-there are 1982 support vectors.  We fit the model with a relatively low cost 
-gives that was rather robust. The number of support vectors given the training 
-data follows from our choice of C as we increase C there are fewer support fewer vectors. Further,As shown in the resulting table, 99% of our training observations were 
-correctly classified.
+|        The output from the SVM model indicates that from our training dataset tells us there are 1982 support vectors. We fit the model with a relatively low cost gives that was rather robust. We obtained the optimal cost of 5 for our model using cross-validation through the function `tune()` in R. The number of support vectors given the training data follows from our choice of C as we increase C there are fewer support fewer vectors. Further, as shown in the resulting table, 76% of our training observations were correctly classified.
 
 # Conclusions
 
-|        Perhaps the largest takeaway of this project is seeing how Multinomial Logistic Regression (MLR) and Support Vector Machines (SVM) are related to each other, as well as limitation of use for each model. The test accuracy for MLR and SVM were 74.2% and 75.74% respectively, and although SVM is more efficient and accurate, we sacrifice interpretability as to how each predictor may affect the likelihood of a particular genre being correctly classfied. With more knowledge about the distribution of our data through empirical and EDA observations, we determined that SVM with a radial kernal was most appropriate for predicting our data. This was because natural clusters (not linear separations) formed depending on the genres' predictors. These separations were better identified through SVM which may account for the slightly higher test accuracy. 
+|        Perhaps the largest takeaway of this project is seeing how Multinomial Logistic Regression (MLR) and Support Vector Machines (SVM) are related to each other, as well as limitation of use for each model. The test accuracy for MLR and SVM were 74.2% and 76% respectively, and although SVM is more efficient and accurate, we sacrifice interpretability as to how each predictor may affect the likelihood of a particular genre being correctly classfied. With more knowledge about the distribution of our data through empirical and EDA observations, we determined that SVM with a radial kernal was most appropriate for predicting our data. This was because natural clusters (not linear separations) formed depending on the genres' predictors. These separations were better identified through SVM which may account for the slightly higher test accuracy. 
 
 |        A limitation/obstacle in the course of this case study was choosing how many different genres to consider in our models. Unfortunately, we had to immediately rule out using all/most of the cleaned 22 genres to choose from, due to computational limits in our local machines when running a MLR. Additionally, in the scope of Spotify's mission to provide popular songs to stream, analyze, and curate playlists from, it made sense to look at a "Top 10" genres, which ruled out more niche genres such as Anime, Ska, and Blue. However, due to overlap in many of the different indicators (many of which were scaled in a range of 0-1 as determined by Spotify), predictive power was lacking so we decided to narrow the field further and use the "Top 5" genres. Therefore to create meaningful models in context of usefulness for Spotify and to explore and analyze the nuances of MLR and SVM largely drove this project.
 
@@ -257,7 +252,7 @@ correctly classified.
 A machine learning approach to automatic music genre classification
 J Braz Comput Soc, 14 (3) (2008)
 
-[2]https://www.kaggle.com/zaheenhamidani/ultimate-spotify-tracks-db
+[2] https://www.kaggle.com/zaheenhamidani/ultimate-spotify-tracks-db
 
 # Appendix
 
@@ -319,4 +314,21 @@ rand_fit3 <- multinom(m0, training, method="class")
 preds <- predict(rand_fit3, testing, type = "class")
 table(preds, testing[['genre']])
 mean(preds == testing[['genre']])
+```
+
+## Support Vector Machine Model
+
+```{r}
+set.seed(1)
+svm_model1 <- svm(genre ~ . - liveness, data=train5, cost = 5, kernel='radial')
+summary(svm_model1)
+
+test5$preds.svm <- predict(svm_model1, newdata=test5)
+svm.table <- table(test5$genre, test5$preds.svm)
+round((sum(diag(svm.table))/sum(svm.table))*100,2)
+```
+
+```{r}
+tune.out=tune(svm,genre ~ . -liveness,data=train5 , ranges =list(cost=c(0.001 , 0.01, 0.1, 1,5,10,100) ))
+summary(tune.out)
 ```

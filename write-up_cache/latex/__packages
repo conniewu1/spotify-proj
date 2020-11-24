@@ -1,0 +1,10 @@
+base
+dplyr
+kableExtra
+ggplot2
+tidyr
+nnet
+groupdata2
+lattice
+caret
+e1071
