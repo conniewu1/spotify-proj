@@ -122,7 +122,7 @@ where $\boldsymbol{\beta_j}$ is a vector of regression coefficients, similar to 
 
 The second classification technique is a supervised machine learning model, chosen appropriately as our data is completely labeled. SVM performs classification by generating one or multiple hyperplanes with $p$ dimensions, $p$ being the number of predictors included in the model. A function is intuitively set to divide the points between two classes, forming what is known as a separating hyperplane. Among the separating hyperplanes created, the one making the largest margin between the two classes is chosen as the optimal model and is used for predictions. 
 
-For both the multinomial logistic and SVM models, we will only be using the top 5 genres, as more genres significantly decreases the predictive accuracy of the multinomial model. 
+For both the multinomial logistic and SVM models, we will only be using the top 5 genres, as more genres significantly decreases the predictive accuracy of the multinomial model. These top 5 genres are Electronic, Indie, Jazz, Pop, and Soundtrack.
 
 
 # Results
