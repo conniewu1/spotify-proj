@@ -124,6 +124,7 @@ library(caret)
 ```
 
 
+
 ```{r}
 svm_model1 <- svm(genre ~ . - liveness, data=train5, cost = 12, kernel='radial')
 summary(svm_model1)
