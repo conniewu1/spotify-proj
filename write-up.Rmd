@@ -142,10 +142,16 @@ details.
 
 
 ## SVM
+
+The SVM model was fit using the variables chosen from backward selection as in
+the case for Multinomial Logistic Regression to keep consistent. As a result, 
+the only variable not chosen in the final model was that of liveliness 
+
 The output from the SVM model indicates that from our training dataset tells us
-there are 1982 support vectors.  We fit the model with a relatively low cost gives that
-was rather robust. The number of support vectors given the training data follows from our choice 
-of c as we increase c there are fewer support fewer vectors. Further,As shown in the resulting table, 99% of our training observations were correctly classified
+there are 1982 support vectors.  We fit the model with a relatively low cost 
+gives that was rather robust. The number of support vectors given the training 
+data follows from our choice of C as we increase C there are fewer support fewer vectors. Further,As shown in the resulting table, 99% of our training observations were 
+correctly classified.
 
 
 # Conclusions
