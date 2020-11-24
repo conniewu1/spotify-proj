@@ -131,10 +131,7 @@ kable(var_table1, booktabs=TRUE,caption="Table 2.1 Descriptions of data set vari
   kable_styling(font_size = 9,latex_options=c("hold_position"))
 ```
 
-Before proceeding further, we performed some data cleaning. Firstly, we eliminated any observations that had the genre 'acapella', because it was a duplicate of a full song already included in the dataset and it had only 119 observations. We also removed any observations with 'Comedy' as they are lengthy tracks of spoken word by comedians, and we considered them not to be actual music. 
-
-[Got rid of children's music bc count was too high when combined (twice others)]
-[Got rid of Reggae because Reggae and Ska are considered very similar, Raggaeton is the preferred genre nowadays]
+Before proceeding further, we performed some data cleaning. Firstly, we eliminated any observations that had the genre 'acapella', because it was a duplicate of a full song already included in the dataset and it had only 119 observations. We also removed any observations with 'Comedy' as they are lengthy tracks of spoken word by comedians, and we considered them not to be actual music. We also got rid of Children's Music due to faulty labeling, and Reggae because it is extremely similar to Ska.
 
 ## Exploratory Data Analysis
 
@@ -241,14 +238,10 @@ The output from the SVM model indicates that from our training dataset tells us 
 
 # Conclusions
 
-Perhaps the largest takeaway of this project is seeing how Multinomial Logistic Regression (MLR) and Support Vector Machines (SVM) are related to each other, as well as limitation of use for each model. The test accuracy for MLR and SVM were 74.3% and 75.74% respectively, and although SVM is more efficient and accurate, we sacrifice interpretability as to how each predictor may affect the likelihood of a particular genre being correctly classfied. With more knowledge about the distribution of our data through empirical and EDA observations, we determined that SVM with a radial kernal was most appropriate for predicting our data. This was because natural clusters (not linear separations) formed depending on the genres' predictors. These separations were better identified through SVM which may account for the slightly higher test accuracy. 
+Perhaps the largest takeaway of this project is seeing how Multinomial Logistic Regression (MLR) and Support Vector Machines (SVM) are related to each other, as well as limitation of use for each model. The test accuracy for MLR and SVM were 74.2% and 75.74% respectively, and although SVM is more efficient and accurate, we sacrifice interpretability as to how each predictor may affect the likelihood of a particular genre being correctly classfied. With more knowledge about the distribution of our data through empirical and EDA observations, we determined that SVM with a radial kernal was most appropriate for predicting our data. This was because natural clusters (not linear separations) formed depending on the genres' predictors. These separations were better identified through SVM which may account for the slightly higher test accuracy. 
 A limitation/obstacle in the course of this case study was choosing how many different genres to consider in our models. Unfortunately, we had to immediately rule out using all/most of the cleaned 22 genres to choose from, due to computational limits in our local machines when running a MLR. Additionally, in the scope of Spotify's mission to provide popular songs to stream, analyze, and curate playlists from, it made sense to look at a "Top 10" genres, which ruled out more niche genres such as Anime, Ska, and Blue. However, due to overlap in many of the different indicators (many of which were scaled in a range of 0-1 as determined by Spotify), predictive power was lacking so we decided to narrow the field further and use the "Top 5" genres. Therefore to create meaningful models in context of usefulness for Spotify and to explore and analyze the nuances of MLR and SVM largely drove this project.
 
 In terms of impacts, having a high level of accuracy is important so Spotify can classify, organize, and ultimately recommend specific genres and songs to its users. While we only looked at the Top 5 genres, grouping models into bins of 5 might be an effective way to maintain fairly high predictability as well as manage computational limits. For example, in future analysis, we can take the Top 6-10 genres, the Top 11-15 genres, and the Top 16-22 genres and apply it to unknown genre-classified songs. This would allow for several possible predictions to which ultimately the highest likelihood for example could be chosen to finally label and predict the song's genre. This segmentation eases computational load and maintains higher accuracy as the possible outcomes are more clear to predict instead of a particular genre being among a crowd of other 21 genres with similar key predictors. In order to improve the results in future findings, perhaps more predictor variables would be useful. The indicators as given by Spotify reflect the aggregate of a particular song and does not account for, say: chord progression; change of keys, tempo, or loudness throughout the course of a song; and thematic or descriptive traits that might be indicative of a genre.
-
-
-
-– Conclusion: A summary of key findings and potential impacts of your project
 
 # Appendix
 
