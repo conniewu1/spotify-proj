@@ -127,7 +127,7 @@ library(caret)
 
 
 ```{r}
-svm_model1 <- svm(genre ~ . - liveness, data=train5, cost = 12, kernel='radial')
+svm_model1 <- svm(genre ~ . - liveness, data=train5, cost = 5, kernel='radial')
 summary(svm_model1)
 
 test5$preds.svm <- predict(svm_model1, newdata=test5)
