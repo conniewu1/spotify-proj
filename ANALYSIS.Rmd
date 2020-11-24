@@ -16,8 +16,9 @@ topten_spotify <- spotify %>%
 spotify.top <- spotify %>%
   filter(genre == topten_spotify$genre) %>%
   select(genre, popularity, acousticness, danceability, duration_ms, energy, instrumentalness, liveness, loudness, speechiness, tempo, valence)
-
+spotify.top$genre <- droplevels(spotify.top$genre)
 ```
+
 
 ```{r}
 n <- nrow(spotify.top)
@@ -68,6 +69,7 @@ topfive_spotify <- spotify %>%
 spotify.top5 <- spotify %>%
   filter(genre == topfive_spotify$genre) %>%
   select(genre, popularity, acousticness, danceability, duration_ms, energy, instrumentalness, liveness, loudness, speechiness, tempo, valence)
+spotify.top5$genre <- droplevels(spotify.top5$genre)
 ```
 ```{r}
 n <- nrow(spotify.top5)
@@ -93,11 +95,9 @@ train5$predicted5 <- predict(step_model5, newdata = train5, "class")
  
 # Building classification table
 ctable5 <- table(train5$genre, train5$predicted5)
-
+ 
 # Calculating accuracy - sum of diagonal elements divided by total obs
-
-ctable5.clean <- ctable5[c(7,10,11,14,21),]
-round((sum(diag(ctable5.clean))/sum(ctable5.clean))*100,2)
+round((sum(diag(ctable5))/sum(ctable5))*100,2)
 ```
 yooooo 75% not too shabby lets see on the fucking test boi 
 ```{r}
@@ -109,9 +109,7 @@ test5$predicted5 <- predict(step_model5, newdata = test5, "class")
 ctable5.test <- table(test5$genre, test5$predicted5)
 
 # Calculating accuracy - sum of diagonal elements divided by total obs
-
-ctable5.test.clean <- ctable5.test[c(7,10,11,14,21),]
-round((sum(diag(ctable5.test.clean))/sum(ctable5.test.clean))*100,2)
+round((sum(diag(ctable5.test))/sum(ctable5.test))*100,2)
 
 ```
 litttyyyyyy.
@@ -126,9 +124,17 @@ library(caret)
 
 
 ```{r}
-svm_model1 <- svm(genre ~ ., data=train, cost = 10, kernel='radial')
+svm_model1 <- svm(genre ~ ., data=train5, cost = .1, kernel='radial')
+summary(svm_model1)
+
+preds <- predict(svm_model1, newdata=test5)
+svm.table <- table(preds, test5$predicted5)
+round((sum(diag(svm.table))/sum(svm.table))*100,2)
 ```
 
 ```{r}
-preds <- predict(svm_model1, data=test)
+
 ```
+
+
+
