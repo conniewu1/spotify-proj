@@ -270,7 +270,7 @@ spotify %>%
 
 ## Multinomial Logistic Regression Model Coefficients
 ```{r}
-kable(summary(multi_final)$coefficients, caption = "Coefficients of our Final Multinomial Logistic Regression Model")
+summary(multi_final)
 ```
 
 ### Multinomial Cross Validation Results 
